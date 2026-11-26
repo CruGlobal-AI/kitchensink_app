@@ -25,7 +25,7 @@ jobs:
          CYPRESS_RETRIES: 2
       steps:
          - name: Install AppBuilder
-           uses: CruGlobal/ab-install-action@v1
+           uses: CruGlobal-AI/ab-install-action@v1
            with:
               folder: ab
               port: 8080
