@@ -20,7 +20,7 @@ on:
 jobs:
    cypress-test:
       name: Cypress E2E Tests
-      uses: CruGlobal-AI/ab-workflows/.github/workflows/cypress-e2e-tests.yml@e2e-kitchensink-ref
+      uses: CruGlobal-AI/ab-workflows/.github/workflows/cypress-e2e-tests.yml@main
       with:
          # ab_runtime ref when called from another workflow; empty = default branch
          runtime: ${{ inputs.ref }}
