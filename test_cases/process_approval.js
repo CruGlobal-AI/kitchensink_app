@@ -50,17 +50,19 @@ export default (folderName, Common) => {
 
          // On the field "test-kcs-process-stock", choose "Coke"
 
+         // The field stays disabled until its options load. A forced click on
+         // the disabled box does not open the list, so wait for it first.
          cy.get(
             '[data-cy="connectObject testkcsprocessstock 20027a41-14aa-4679-9f30-a066f153a89a 79d1f941-04c2-4d65-98e9-1303da4412c2"]'
          )
             .find(".webix_el_box")
             .should("be.visible")
-            .click({ force: true });
+            .and("not.have.class", "webix_disabled_box")
+            .click();
 
-         cy.get(".webix_list_item")
-            .should("be.visible")
-            .contains("Coke")
-            .click({ force: true });
+         // Query the item by text so Cypress retries the lookup. A bare
+         // ".webix_list_item" also matches menu items elsewhere on the page.
+         cy.contains(".webix_list_item", "Coke").should("be.visible").click();
 
          // On the field "amount", fill up "10"
 
@@ -186,17 +188,19 @@ export default (folderName, Common) => {
 
          // On the field "test-kcs-process-stock", choose "Est"
 
+         // The field stays disabled until its options load. A forced click on
+         // the disabled box does not open the list, so wait for it first.
          cy.get(
             '[data-cy="connectObject testkcsprocessstock 20027a41-14aa-4679-9f30-a066f153a89a 79d1f941-04c2-4d65-98e9-1303da4412c2"]'
          )
             .find(".webix_el_box")
             .should("be.visible")
-            .click({ force: true });
+            .and("not.have.class", "webix_disabled_box")
+            .click();
 
-         cy.get(".webix_list_item")
-            .should("be.visible")
-            .contains("Est")
-            .click({ force: true });
+         // Query the item by text so Cypress retries the lookup. A bare
+         // ".webix_list_item" also matches menu items elsewhere on the page.
+         cy.contains(".webix_list_item", "Est").should("be.visible").click();
 
          // On the field "amount", fill up "20"
 
