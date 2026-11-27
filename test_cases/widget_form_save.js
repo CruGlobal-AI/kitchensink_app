@@ -18,7 +18,10 @@ export default () => {
             '[data-cy="string Title 2e7a1c02-141a-4cdd-b93e-62c6c4e4765b 7e074587-ddc5-4d34-9f37-a0ab88a4258b"]',
          )
             .should("be.visible")
-            .type("Test Record Rules", { delay: 0 });
+            .type("Test Record Rules", { delay: 0 })
+            // blur so webix commits the value before the forced Save click
+            // (Cypress 16 saved the record with a blank Title without this)
+            .blur();
 
          cy.get('[data-cy="button save 7e074587-ddc5-4d34-9f37-a0ab88a4258b"]')
             .should("be.enabled")

@@ -130,6 +130,9 @@ export default (/*folderName*/) => {
             .should("be.visible")
             .and("contain", "hello world!");
          // 17. Delete the comment
+         // Click away first so webix closes any menu left open from the
+         // cancelled delete. On Cypress 16 the menu did not reopen otherwise.
+         cy.get("body").click(0, 0);
          cy.get("@theComment")
             .find(".webix_comments_menu")
             .click({ force: true });
