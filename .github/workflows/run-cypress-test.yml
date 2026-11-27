@@ -19,6 +19,7 @@ jobs:
    cypress-test:
       name: Cypress E2E Tests
       runs-on: ubuntu-latest
+      timeout-minutes: 30
       env:
          CYPRESS_RESPONSE_TIMEOUT: 200000
          CYPRESS_DEFAULT_COMMAND_TIMEOUT: 30000
@@ -74,6 +75,21 @@ jobs:
                  sleep 5
                  done
               done
+
+         # ab_web being up is not enough. nginx returns 502 until api_sails
+         # is listening, and the first /test/reset call then fails every spec.
+         - name: Wait for the API to answer
+           run: |
+              for i in $(seq 1 120); do
+                 code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/app_builder/model/ping || true)
+                 case "$code" in
+                    000|502|503|504) echo "API not ready ($code), waiting... ($i/120)"; sleep 5 ;;
+                    *) echo "API answered with $code. ✅"; exit 0 ;;
+                 esac
+              done
+              echo "❌ Timed out waiting for the API."
+              docker service ls
+              exit 1
 
          - name: Run Cypress Tests
            run: npm run test:e2e:ab-runtime -- --browser chrome
