@@ -32,7 +32,10 @@ const ProcessTestCases = [
    require("./test_cases/process_approval.js"),
    require("./test_cases/process_test-kcs-onCreate-process.js"),
 ];
-const pwaTestCases = [require("./test_cases/pwa_form.js")];
+const pwaTestCases = [
+   require("./test_cases/pwa_form.js"),
+   require("./test_cases/pwa_grid.js"),
+];
 
 // Don't stop tests on uncaught errors
 Cypress.on("uncaught:exception", (e) => {
