@@ -235,12 +235,17 @@ export default () => {
             .as("rowSproket")
             .click();
 
+         // The Edit Character popup re-renders the spells field while it
+         // loads the record. Wait for the loaded values before clicking [x].
+         cy.get('[optvalue="8f07bf6a-5c9d-47ac-8fb1-f43a4bae4f36"]').should(
+            "contain",
+            "Frostbolt",
+         );
+
          // click the [x] on frostbolt
          cy.get(
             '[optvalue="8f07bf6a-5c9d-47ac-8fb1-f43a4bae4f36"] > .webix_multicombo_delete'
-         )
-            .should("be.visible")
-            .click();
+         ).click();
 
          // click [save]
          cy.get('[data-cy="button save 6a38ac65-7048-46ae-a771-29c7260f177e"]')

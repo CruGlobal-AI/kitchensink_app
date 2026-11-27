@@ -14,30 +14,30 @@ export default () => {
       });
 
       it("Submit Record Rules Form", () => {
-         // This page has 2 forms. Each one calls focusOnFirst() when its data
-         // finishes loading, so the one that loads last takes focus, even in
-         // the middle of typing. Cypress 16 types into the focused element, so
-         // wait until a form has taken focus, give the other one a moment, then
-         // click our field and check the text landed in it.
-         cy.get('input[data-cy^="string Title 2e7a1c02-141a-4cdd-b93e-62c6c4e4765b"]')
-            .should("have.length", 2);
-         cy.focused().should("match", 'input[data-cy^="string Title 2e7a1c02-141a-4cdd-b93e-62c6c4e4765b"]');
-         cy.wait(500);
-         cy.get(
-            '[data-cy="string Title 2e7a1c02-141a-4cdd-b93e-62c6c4e4765b 7e074587-ddc5-4d34-9f37-a0ab88a4258b"]',
-         )
-            .as("title")
+         // Both forms on this page focus their first field when they finish
+         // loading, and each one disables its Save button until then. If we
+         // type before both are done, the other form steals focus and gets
+         // our text. So wait for both Save buttons, then click our field and
+         // check the text landed in it.
+         const saveRecordRules =
+            '[data-cy="button save 7e074587-ddc5-4d34-9f37-a0ab88a4258b"]';
+         const saveDefaultValues =
+            '[data-cy="button save 0181c44e-08ec-4953-beee-d6b36d02b1eb"]';
+         cy.get(saveRecordRules).should("be.enabled");
+         cy.get(saveDefaultValues).should("be.enabled");
+
+         const titleInput =
+            '[data-cy="string Title 2e7a1c02-141a-4cdd-b93e-62c6c4e4765b 7e074587-ddc5-4d34-9f37-a0ab88a4258b"]';
+         cy.get(titleInput)
             .should("be.visible")
             .click()
             .type("Test Record Rules", { delay: 0 });
-         cy.get("@title")
+         cy.get(titleInput)
             .should("have.value", "Test Record Rules")
             .and("have.focus")
             .blur();
 
-         cy.get('[data-cy="button save 7e074587-ddc5-4d34-9f37-a0ab88a4258b"]')
-            .should("be.enabled")
-            .click({ force: true });
+         cy.get(saveRecordRules).click();
          cy.get(
             '[data-cy^="ABViewGrid_42938e52-9da9-4ece-b492-deb253244d3e_datatable"]',
          ).scrollIntoView();
