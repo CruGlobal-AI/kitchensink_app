@@ -79,9 +79,10 @@ jobs:
          # ab_web being up is not enough. nginx returns 502 until api_sails
          # is listening, and the first /test/reset call then fails every spec.
          - name: Wait for the API to answer
+           timeout-minutes: 12
            run: |
               for i in $(seq 1 120); do
-                 code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/app_builder/model/ping || true)
+                 code=$(curl -s --max-time 10 -o /dev/null -w '%{http_code}' http://localhost:8080/app_builder/model/ping || true)
                  case "$code" in
                     000|502|503|504) echo "API not ready ($code), waiting... ($i/120)"; sleep 5 ;;
                     *) echo "API answered with $code. ✅"; exit 0 ;;
