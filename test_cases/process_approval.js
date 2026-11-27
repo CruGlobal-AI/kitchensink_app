@@ -166,6 +166,17 @@ export default (folderName, Common) => {
             .children()
             .should("have.length", 7);
 
+         // The order from the first test is still in the table. Wait for the
+         // grid to show it, so the DC is done loading. If the DC finishes
+         // after "New Order" opens the form, it sets the cursor to that row,
+         // and "save" updates it instead of adding a new order. An update
+         // does not start the approval process, so no inbox badge shows up.
+         cy.get(
+            '[data-cy="ABViewGrid_b5ccd065-a499-48b0-ac86-6c0ae4247de2_datatable"]'
+         )
+            .contains(".webix_cell", "TKPO-")
+            .should("exist");
+
          // Click on the button "New Order"
          cy.get(
             '[data-cy="menu-item New Order ed0e35bb-9367-4fa8-83cc-b6318375fd56 25735600-076c-4f11-874b-d33863eea029"]'
