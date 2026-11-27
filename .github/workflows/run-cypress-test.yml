@@ -1,5 +1,7 @@
 name: E2E Tests
-# Installs AB with the given runtime and run our e2e test.
+# Installs AB with the given runtime and runs our e2e tests against this repo's specs.
+# Thin wrapper around the shared workflow (image pre-pull, caching, readiness wait instead of sleep):
+# https://github.com/CruGlobal-AI/ab-workflows/blob/main/.github/workflows/cypress-e2e-tests.yml
 on:
    workflow_call:
       inputs:
@@ -18,52 +20,13 @@ on:
 jobs:
    cypress-test:
       name: Cypress E2E Tests
-      runs-on: ubuntu-latest
-      timeout-minutes: 30
-      env:
-         CYPRESS_RESPONSE_TIMEOUT: 200000
-         CYPRESS_DEFAULT_COMMAND_TIMEOUT: 30000
-         CYPRESS_RETRIES: 2
-      steps:
-         - name: Install AppBuilder
-           uses: CruGlobal-AI/ab-install-action@v1
-           with:
-              folder: ab
-              port: 8080
-              runtime: ${{ inputs.ref }}
-
-         - name: Check out kitchen-sink tests
-           uses: actions/checkout@v7
-           with:
-              path: ab/test/e2e/cypress/e2e/kitchensink_app
-
-         - name: Deploy Stack
-           run: ./UP.sh -t -q
-           working-directory: ./ab
-
-         # These next steps are to save our ablogs to file
-         - run: npm install pm2@latest -g
-         - name: Save Logs
-           run: pm2 start ./logs.js -- --toFile logs/ABServices.log
-           working-directory: ./ab
-
-         # Same wait as CruGlobal-AI/ab_runtime cy-tests.yml.
-         - run: docker service ls
-         - run: sleep 120s
-         - run: docker service ls
-
-         - name: Run Cypress Tests
-           run: npm run test:e2e:ab-runtime -- --browser chrome
-           working-directory: ./ab
-
-         - uses: actions/upload-artifact@v7
-           if: failure()
-           with:
-              name: cypress-screenshots
-              path: ./ab/test/e2e/cypress/screenshots
-
-         - uses: actions/upload-artifact@v7
-           if: failure()
-           with:
-              name: ABServices.log
-              path: ./ab/logs/ABServices.log
+      uses: CruGlobal-AI/ab-workflows/.github/workflows/cypress-e2e-tests.yml@e2e-kitchensink-ref
+      with:
+         # ab_runtime ref when called from another workflow; empty = default branch
+         runtime: ${{ inputs.ref }}
+         # Test this repo's own specs when running here (another caller gets the default branch)
+         kitchensink_ref: ${{ github.repository == format('{0}/kitchensink_app', github.repository_owner) && github.ref || '' }}
+         config: ab-runtime
+         folder: ab
+         port: "8080"
+         timeout_minutes: 30
